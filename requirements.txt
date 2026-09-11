@@ -1,0 +1,19 @@
+torch>=2.0.0
+transformers>=4.35.0
+tokenizers>=0.14.0
+librosa>=0.10.1
+soundfile>=0.12.1
+audioread>=3.0.0
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+matplotlib>=3.7.0
+tqdm>=4.65.0
+pyyaml>=6.0
+
+# optional
+torch-geometric>=2.4.0   # official SAGEConv/GATConv layers
+yt-dlp>=2024.1.0         # only to fetch MusicCaps audio from YouTube
+
+# system: ffmpeg must be on PATH for mp3/m4a decoding

@@ -1,0 +1,90 @@
+paths:
+  project_root: ./gnn-bert-music-context
+  fma_audio_dir: C:\Users\user3\Downloads\nn\fma_small_extracted\fma_small
+  fma_metadata_dir: C:\Users\user3\Downloads\nn\fma_metadata
+  musiccaps_csv: C:\Users\user3\Downloads\nn\musiccaps-public.csv
+  musiccaps_audio_dir: C:\Users\user3\Downloads\nn\audio
+  deam_dir: C:\Users\user3\Downloads\nn\DEAM
+audio:
+  sample_rate: 22050
+  n_fft: 2048
+  hop_length: 512
+  n_mels: 128
+  n_chroma: 12
+  n_mfcc: 20
+  fmin: 20.0
+  fmax: null
+  chroma_type: cqt
+  per_track_normalise: true
+  mel_cnn_frames: 512
+  fma_clip_seconds: 30.0
+  musiccaps_clip_seconds: 10.0
+graph:
+  fma_window_seconds: 5.0
+  fma_hop_seconds: 1.25
+  mc_window_seconds: 2.0
+  mc_hop_seconds: 1.0
+  beat_synchronous_chords: true
+  similarity_threshold: 0.8
+  similarity_topk: 2
+  add_self_loops: true
+  chord_median_filter: 5
+  max_segment_nodes: 64
+  min_chord_nodes: 2
+text:
+  bert_name: bert-base-uncased
+  max_length_caption: 192
+  max_length_metadata: 128
+  freeze_bert_layers: 0
+  strip_label_terms_from_metadata: true
+labels:
+  musiccaps_top_tags: 50
+  fma_max_subgenres: 25
+  min_positive_count: 20
+  use_mood_lexicon: false
+train:
+  seed: 42
+  batch_size_text: 64
+  batch_size_graph: 128
+  batch_size_fusion: 64
+  batch_size_contrastive: 256
+  epochs_task1: 16
+  epochs_task2: 80
+  epochs_task3: 60
+  epochs_task4: 60
+  epochs_cnn: 80
+  lr_bert: 2.0e-05
+  lr_head: 0.001
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  grad_clip: 1.0
+  early_stopping_patience: 18
+  num_workers: 0
+  amp: true
+  alpha_valence: 0.5
+  beta_arousal: 0.5
+  contrastive_temperature: 0.07
+model:
+  gnn_type: gat
+  gnn_hidden: 320
+  gnn_layers: 2
+  gnn_heads: 4
+  gnn_dropout: 0.3
+  graph_embed_dim: 320
+  fusion_dim: 320
+  fusion_dropout: 0.2
+  projection_dim: 256
+  cnn_channels:
+  - 32
+  - 64
+  - 128
+  - 256
+run:
+  data_mode: real
+  n_synth_fma_tracks: 480
+  n_synth_musiccaps: 900
+  max_fma_tracks: null
+  max_musiccaps_clips: null
+  enforce_artist_disjoint_splits: false
+  run_task4_zero_shot: true
+  n_export_graph_samples: 24
