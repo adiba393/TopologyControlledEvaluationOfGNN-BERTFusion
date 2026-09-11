@@ -1,70 +1,112 @@
-# GNN-Based BERT for Understanding Context from Music
+# GNN–BERT Music Context Understanding
 
-Course project - Neural Networks (CSE425 / EEE474 / CSE715).
-Hybrid **BERT + Graph Neural Network** system for *understanding* musical context: multi-label tagging,
-multi-context fusion, and cross-modal retrieval on **FMA-small** and **MusicCaps**.
+Code for the paper *Topology-Controlled Evaluation of GNN–BERT Fusion for Music Context Understanding under a Measured Resolution Limit* (Tahsin, Faruk, Mostakim — BRAC University).
 
-## Results (REAL DATA)
+A four-task system over FMA-small and MusicCaps — BERT tagging, GNN genre recognition, GNN–BERT fusion, and contrastive audio–text retrieval — evaluated under a measured noise floor. The main finding is that message passing over the segment graphs contributes nothing measurable: deleting every edge changes macro-F1 by +0.0100 against a run-to-run resolution limit of 0.0314.
 
-| Model | Dataset | Macro-F1 | AUC-PR | R@5 |
-|---|---|---|---|---|
-| B1 random tags | MusicCaps | 0.0945 | 0.0612 | - |
-| B2 CNN mel-spectrogram | FMA-small | 0.5386 | 0.5516 | - |
-| B4 PCA + MLP | FMA-small | 0.3381 | 0.3246 | - |
-| **Task 1** BERT-only (B3) | MusicCaps | 0.6375 | 0.6932 | - |
-| **Task 2** GNN-only | FMA-small | 0.4535 | 0.4895 | - |
-| **Task 3** GNN-BERT fusion | FMA-small | 0.2929 | 0.3304 | - |
-| **Task 4** Contrastive dual-encoder | MusicCaps | 0.0961 | 0.0691 | 0.1334 |
-
-Full numbers, ablations and per-tag breakdowns: `results/metrics.json` and `results/*.csv`.
-
-## Quick start
+## Installation
 
 ```bash
-pip install -r requirements.txt      # + ffmpeg on PATH
-# optional: real data
-curl -O https://os.unil.cloud.switch.ch/fma/fma_metadata.zip
-curl -O https://os.unil.cloud.switch.ch/fma/fma_small.zip
-unzip fma_metadata.zip -d data/raw/ && unzip fma_small.zip -d data/raw/
-curl -o data/raw/musiccaps/musiccaps-public.csv \
-     https://storage.googleapis.com/gresearch/musiccaps/musiccaps-public.csv
-jupyter lab GNN_BERT_Music_Context_Project.ipynb   # run all cells
+pip install torch numpy pandas scikit-learn matplotlib tqdm
+pip install librosa soundfile transformers
+pip install torch-geometric   # optional; built-in SAGE/GAT used as fallback
 ```
 
-Without the corpora the notebook runs on a deterministic synthetic stand-in so every code path still executes.
+Python ≥ 3.10. Experiments ran on a single NVIDIA RTX A6000.
 
-## Method
-
-1. **Preprocessing** - 22,050 Hz mono; 128-bin log-mel and 12-bin chroma, per-track standardised; MFCC-20 and five
-   spectral descriptors; 5 s windows with 2.5 s hop (2 s / 1 s for 10 s MusicCaps clips); beat tracking for
-   beat-synchronous chroma.
-2. **Graphs** - (a) *segment graph*: nodes = windows with 94-D descriptors, edges = temporal adjacency plus
-   MFCC/chroma cosine similarity above tau=0.8; (b) *chord-transition graph*: beat-synchronous chroma
-   matched to 24 major/minor triad templates, nodes = unique chords, edges weighted by observed transition counts.
-3. **Models** - dual-branch GraphSAGE/GAT encoder with mean+max readout; BERT (`bert-base-uncased`) text tower;
-   cross-attention fusion z = CONCAT(g, A H_text); contrastive dual-encoder with learnable temperature.
-4. **Protocol** - official FMA `set/split` partition with an artist-leakage audit; MusicCaps split on the AudioSet-eval
-   flag; per-tag decision thresholds tuned on validation only; every experiment seeded at 42.
-
-## Layout
+## Data
 
 ```
-gnn-bert-music-context/
-  GNN_BERT_Music_Context_Project.ipynb   # master notebook (all four tasks)
-  README.md  requirements.txt  config.yaml
-  data/{raw,processed,splits}            # graph cache + >= 20 exported sample graphs
-  notebooks/{eda,demo_context}.ipynb
-  src/{audio_features,graph_builder,datasets,bert_encoder,gnn_model,
-       fusion_model,contrastive,train,evaluate,config}.py
-  results/{metrics.json,*.csv,plots/,retrieval_examples/,checkpoints/}
-  report/final_report.pdf
+data/raw/
+├── fma_small/          FMA-small audio (7,993 tracks, 8 genres)
+├── fma_metadata/       tracks.csv, genres.csv
+├── musiccaps/          musiccaps-public.csv + audio/
+└── DEAM/               valence/arousal annotations
 ```
 
-## Report templates
-NeurIPS 2024 - <https://www.overleaf.com/latex/templates/neurips-2024/tpsbbrdqcmsh> |
-IEEE Conference - <https://www.overleaf.com/latex/templates/ieee-conference-template> |
-ICML 2025 - <https://www.overleaf.com/latex/templates/icml2025-template>
+Paths are set in `PathConfig` (`config.py`). MusicCaps audio is best taken from the CLAPv2 mirror (96.9% yield). Official splits are used and audited for artist leakage. Set `RunConfig.data_mode = "demo"` to run the whole pipeline on synthetic audio without any corpus on disk.
 
-## Data credits
-FMA: Defferrard, Benzi, Vandergheynst & Bresson, *FMA: A Dataset For Music Analysis*, ISMIR 2017.
-MusicCaps: Agostinelli et al., *MusicLM: Generating Music From Text*, 2023 (captions CC-BY-SA; audio not redistributed).
+## Usage
+
+```python
+CFG = Config()
+set_seed(CFG.train.seed)
+DEVICE = pick_device()
+
+table = build_fma_table(CFG)
+keys = build_cache(table, cache_dir, CFG, seconds=30.0, win_s=5.0, hop_s=2.5, tag="fma")
+
+model = GNNClassifier(SEG_DIM, CHORD_DIM, len(FMA_GENRES_SMALL), CFG.model)
+Trainer(model, ce_loss_fn, CFG.train, monitor="macro_f1", name="task2") \
+    .fit(loaders["training"], loaders["validation"], CFG.train.epochs_task2, eval_fn=eval_genre)
+```
+
+Fusion ablation (four modes at an equal budget):
+
+```python
+for mode in ("xattn", "concat", "bert_only", "gnn_only"):
+    run_fusion_variant(mode, CFG.train.epochs_task3, loaders, n_labels, tag=mode)
+```
+
+## Structure
+
+| File | Contents |
+|---|---|
+| `config.py` | All configuration dataclasses |
+| `datasets.py` | Corpus tables, label spaces, leakage audit, Dataset and collation |
+| `audio_features.py` | Feature extraction and per-track graph cache |
+| `graph_builder.py` | Segment and chord graph construction |
+| `bert_encoder.py` | Text encoder and tag classifier (Task 1) |
+| `gnn_model.py` | SAGE/GAT layers, dual GNN encoder (Task 2), mel-CNN baseline |
+| `fusion_model.py` | Cross-attention fusion with ablation harness (Task 3) |
+| `contrastive.py` | Dual encoder, InfoNCE, retrieval (Task 4) |
+| `train.py` | Trainer, optimiser, schedules, losses |
+| `evaluate.py` | Metrics and threshold tuning |
+
+Modules are exported from the master notebook and share its globals (`CFG`, `DEVICE`, `TOKENIZER`, `SEG_DIM`, …), so they are not importable standalone — run the notebook or bind those names first.
+
+## Results
+
+**FMA-small, 8-way genre (macro-F1)**
+
+| Model | Score |
+|---|---|
+| CLAP linear probe (ref) | 0.5395 |
+| Mel-CNN baseline | 0.5245 ± 0.0110 |
+| GNN, no edges | 0.4344 ± 0.0196 |
+| GNN, full graph | 0.4324 ± 0.0112 |
+| Random | 0.1350 |
+
+**MusicCaps, 50-aspect (macro-F1)**
+
+| Model | Score |
+|---|---|
+| Fusion (graph + caption) | 0.6389 |
+| BERT fine-tuned | 0.6375 |
+| TF-IDF + logreg | 0.6262 |
+| Lexical match (0 params) | 0.5175 |
+
+Resolution limit σ̂<sub>run</sub> = 0.0314 macro-F1, measured over three reruns of one fixed configuration; no smaller difference is reported as a difference. Retrieval reaches R@5 = 0.1421 over the full 802-clip gallery (22.8× chance).
+
+## Reproducing the audits
+
+- **Topology** — retrain under five edge policies (`all`, `q25`, `q50`, `temporal`, `self_only`) holding node features, encoder, readout and schedule fixed.
+- **Annotation** — partition MusicCaps test positives by whether the aspect string appears verbatim in the caption; for FMA, retrain under five degraded text views against the audio-only floor.
+- **Mechanism** — compute effective rank and cosine profiles per layer via `coherence_analysis()`.
+
+Differences use a paired bootstrap (B = 2000, α = 0.05) with Holm correction.
+
+## Citation
+
+```bibtex
+@inproceedings{tahsin_topology_controlled,
+  title  = {Topology-Controlled Evaluation of {GNN}--{BERT} Fusion for Music Context
+            Understanding under a Measured Resolution Limit},
+  author = {Tahsin, Adiba and Faruk, Farhan and Mostakim, Moin},
+  year   = {}
+}
+```
+
+## License
+
+TBD. FMA, MusicCaps and DEAM carry their own terms of use.
