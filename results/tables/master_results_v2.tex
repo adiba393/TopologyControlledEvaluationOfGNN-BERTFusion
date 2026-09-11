@@ -1,0 +1,26 @@
+\begin{table}[t]
+\caption{Main results. Mean $\pm$ sd over independent runs where available; single-run entries marked $n{=}1$.}
+\label{tab:master2}
+\begin{tabular}{lllr}
+\toprule
+ & dataset & reported & n\_runs \\
+model &  &  &  \\
+\midrule
+REF: frozen CLAP + linear probe & FMA-small & 0.5395 (n=1) & 1 \\
+B2 CNN & FMA-small & 0.5245 +/- 0.0110 & 3 \\
+Task 2 GNN, ALL EDGES DELETED & FMA-small & 0.4588 (n=1) & 1 \\
+Task 2 GNN & FMA-small & 0.4324 +/- 0.0112 & 3 \\
+B4: PCA + MLP & FMA-small & 0.3381 (n=1) & 1 \\
+REF: frozen CLAP zero-shot & FMA-small & 0.2850 (n=1) & 1 \\
+Task 3 concat & FMA-small & 0.2793 +/- 0.0189 & 3 \\
+Task 3 GNN-only & FMA-small & 0.2723 +/- 0.0080 & 3 \\
+Task 3 xattn & FMA-small & 0.2714 +/- 0.0079 & 3 \\
+Task 3 BERT-only & FMA-small & 0.2605 +/- 0.0113 & 3 \\
+B1: Random genre & FMA-small & 0.1350 (n=1) & 1 \\
+Task 1: BERT fine-tuned & MusicCaps & 0.6375 (n=1) & 1 \\
+B6: TF-IDF + logreg & MusicCaps & 0.6262 (n=1) & 1 \\
+B5: lexical match (0 params) & MusicCaps & 0.5175 (n=1) & 1 \\
+Task 4: contrastive zero-shot & MusicCaps & 0.1041 (n=1) & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}

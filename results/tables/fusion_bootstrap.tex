@@ -1,0 +1,17 @@
+\begin{table}[t]
+\caption{Paired bootstrap over all fusion pairs, Holm-corrected.}
+\label{tab:t3boot}
+\begin{tabular}{llrlrl}
+\toprule
+ & B & A - B & 95\% CI & p\_raw & Holm 0.05 \\
+A &  &  &  &  &  \\
+\midrule
+Task 3 xattn & Task 3 BERT-only & 0.0131 & [-0.0050, +0.0315] & 0.1610 & not significant \\
+Task 3 xattn & Task 3 concat & -0.0323 & [-0.0567, -0.0082] & 0.0140 & not significant \\
+Task 3 xattn & Task 3 GNN-only & -0.0181 & [-0.0513, +0.0168] & 0.3090 & not significant \\
+Task 3 BERT-only & Task 3 concat & -0.0454 & [-0.0684, -0.0225] & 0.0000 & significant \\
+Task 3 BERT-only & Task 3 GNN-only & -0.0312 & [-0.0659, +0.0051] & 0.0900 & not significant \\
+Task 3 concat & Task 3 GNN-only & 0.0142 & [-0.0197, +0.0471] & 0.4090 & not significant \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,14 @@
+\begin{table}[t]
+\caption{Task 3 fusion-strategy ablation.}
+\label{tab:t3abl}
+\begin{tabular}{lrrrrrr}
+\toprule
+ & macro\_f1 & micro\_f1 & samples\_f1 & auc\_pr\_macro & auc\_pr\_micro & roc\_auc\_macro \\
+\midrule
+cross-attention (full) & 0.2929 & 0.3673 & 0.3314 & 0.3304 & 0.3731 & 0.7891 \\
+BERT-only & 0.2640 & 0.3130 & 0.2739 & 0.3184 & 0.2748 & 0.7494 \\
+GNN-only & 0.2737 & 0.3589 & 0.3363 & 0.2802 & 0.3840 & 0.8469 \\
+early concat & 0.3355 & 0.3188 & 0.2926 & 0.3512 & 0.2654 & 0.7735 \\
+\bottomrule
+\end{tabular}
+\end{table}

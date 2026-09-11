@@ -1,0 +1,14 @@
+\begin{table}[t]
+\caption{Task 2 architecture ablation (2x2: SAGE/GAT x chord branch).}
+\label{tab:t2abl}
+\begin{tabular}{lrrrrr}
+\toprule
+ & accuracy & macro\_f1 & micro\_f1 & auc\_pr\_macro & roc\_auc\_macro \\
+\midrule
+GAT + chord & 0.4875 & 0.4535 & 0.4875 & 0.4895 & 0.8292 \\
+SAGE + chord & 0.4925 & 0.4747 & 0.4925 & 0.4915 & 0.8290 \\
+SAGE, segment only & 0.4788 & 0.4598 & 0.4788 & 0.4897 & 0.8272 \\
+GAT, segment only & 0.4662 & 0.4458 & 0.4662 & 0.4853 & 0.8283 \\
+\bottomrule
+\end{tabular}
+\end{table}

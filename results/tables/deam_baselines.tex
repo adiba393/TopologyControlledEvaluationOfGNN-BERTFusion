@@ -1,0 +1,11 @@
+\begin{tabular}{lrrrrr}
+\toprule
+ & mae\_valence & r2\_valence & mae\_arousal & r2\_arousal & mae\_mean \\
+model &  &  &  &  &  \\
+\midrule
+B0: train-mean predictor & 0.941600 & -0.005500 & 1.083500 & -0.000000 & 1.012600 \\
+B4d: PCA + ridge (hand-crafted) & 0.802900 & 0.248700 & 0.866400 & 0.299100 & 0.834700 \\
+B2d: mel-CNN (audio only) & 0.674600 & 0.440100 & 0.733000 & 0.451500 & 0.703800 \\
+Graph emotion regressor (ours) & 0.709800 & 0.397100 & 0.739200 & 0.475100 & 0.724500 \\
+\bottomrule
+\end{tabular}

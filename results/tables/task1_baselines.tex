@@ -1,0 +1,14 @@
+\begin{table}[t]
+\caption{Task 1 against a zero-parameter lexical baseline.}
+\label{tab:t1base}
+\begin{tabular}{lrrr}
+\toprule
+ & macro\_f1 & micro\_f1 & auc\_pr\_macro \\
+\midrule
+B1 random & 0.0945 & 0.0975 & 0.0612 \\
+B5 lexical match (0 params) & 0.5175 & 0.4842 & 0.3604 \\
+B6 TF-IDF + logistic reg. & 0.6262 & 0.6603 & 0.6638 \\
+Task 1 BERT (fine-tuned) & 0.6375 & 0.6731 & 0.6932 \\
+\bottomrule
+\end{tabular}
+\end{table}

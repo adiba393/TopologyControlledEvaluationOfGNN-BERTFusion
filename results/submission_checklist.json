@@ -1,0 +1,126 @@
+{
+  "checklist": [
+    {
+      "item": "Uses >= 1 audio dataset and >= 1 text/tag source",
+      "satisfied": true,
+      "evidence": "FMA-small (audio) + MusicCaps (captions/aspects)"
+    },
+    {
+      "item": "Task 1 - BERT multi-label tagger + F1 curves + 5 predictions + attention",
+      "satisfied": true,
+      "evidence": "Macro-F1=0.6375"
+    },
+    {
+      "item": "Task 2 - GNN on segment/chord graphs + CNN baseline",
+      "satisfied": true,
+      "evidence": "GNN Macro-F1=0.4535 vs CNN 0.5386"
+    },
+    {
+      "item": "Task 3 - fusion + 4-way ablation + t-SNE + 3 case studies",
+      "satisfied": true,
+      "evidence": "Macro-F1=0.2929"
+    },
+    {
+      "item": "Task 4 - contrastive retrieval + 10 examples + zero-shot",
+      "satisfied": true,
+      "evidence": "c2a R@5=0.1334, zero-shot Macro-F1=0.0961"
+    },
+    {
+      "item": "Baselines - at least two (B1/B2/B3/B4 all present)",
+      "satisfied": true,
+      "evidence": "B1, B2, B3, B4"
+    },
+    {
+      "item": "Metrics - Macro-F1, Micro-F1, AUC-PR, MAE, R^2, R@K, graph coherence",
+      "satisfied": true,
+      "evidence": "all implemented in Section 6"
+    },
+    {
+      "item": "Preprocessed graph samples >= 20 (.pt and .json)",
+      "satisfied": true,
+      "evidence": "36 .pt + matching .json"
+    },
+    {
+      "item": "Evaluation tables + plots",
+      "satisfied": true,
+      "evidence": "17 figures, 8 CSVs"
+    },
+    {
+      "item": "results/metrics.json",
+      "satisfied": true,
+      "evidence": "written after every experiment"
+    },
+    {
+      "item": "Demo notebook notebooks/demo_context.ipynb",
+      "satisfied": true,
+      "evidence": "one end-to-end inference example"
+    },
+    {
+      "item": "GitHub structure (src/, data/, results/, report/)",
+      "satisfied": true,
+      "evidence": "README.md + requirements.txt + config.yaml"
+    },
+    {
+      "item": "Splits documented, no artist leakage audit",
+      "satisfied": true,
+      "evidence": "official FMA split; artist overlap train/test = 0"
+    },
+    {
+      "item": "Final report PDF (6-10 pages)",
+      "satisfied": false,
+      "evidence": "-> write this from results/ using the NeurIPS/IEEE/ICML template"
+    }
+  ],
+  "rubric": [
+    {
+      "Category": "Dataset & preprocessing",
+      "Weight": 15,
+      "Evidence in this repository": "22.05 kHz / 128-mel / 12-chroma, per-track norm, 5 s windows, documented chord + segment graph construction, official splits + leakage audit"
+    },
+    {
+      "Category": "Model implementation",
+      "Weight": 25,
+      "Evidence in this repository": "BERT tower, dual-branch GraphSAGE/GAT (PyG or equivalent), cross-attention fusion, contrastive dual-encoder; seeded, checkpointed, exported to src/"
+    },
+    {
+      "Category": "Context understanding quality",
+      "Weight": 20,
+      "Evidence in this repository": "Macro-F1 / AUC-PR / R@K reported against 4 baselines on both corpora"
+    },
+    {
+      "Category": "Baseline comparison",
+      "Weight": 15,
+      "Evidence in this repository": "B1 random+majority, B2 CNN mel-spec, B3 BERT-only, B4 PCA+MLP - same splits"
+    },
+    {
+      "Category": "Metrics & analysis",
+      "Weight": 15,
+      "Evidence in this repository": "per-tag tables, 4-way ablation, t-SNE, case studies, graph-coherence null test"
+    },
+    {
+      "Category": "Report & presentation",
+      "Weight": 10,
+      "Evidence in this repository": "README + 13 figures + 8 CSVs ready to drop into the LaTeX template"
+    }
+  ],
+  "plots": [
+    "00_preprocessing_overview.png",
+    "01_task1_bert_curves.png",
+    "02_task1_attention_examples.png",
+    "03_task2_gnn_curves.png",
+    "04_task2_confusion_and_baselines.png",
+    "05_task3_fusion_curves.png",
+    "06_task3_ablation.png",
+    "07_task3_tsne.png",
+    "08_task3_case_studies.png",
+    "09_graph_coherence.png",
+    "10_task4_retrieval.png",
+    "11_edge_ablation.png",
+    "11_task4_similarity_matrix.png",
+    "12_oversmoothing_profile.png",
+    "12_task4_zeroshot_vs_supervised.png",
+    "13_master_comparison.png",
+    "13_task1_lexical_baselines.png"
+  ],
+  "synthetic_run": false
+}
